@@ -26,17 +26,27 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
     // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
 
     // TODO: cannot add items, no idea how. Maybe it's one of the other callbacks? Maybe it's the CreatableSelect?
-    //    having a hard time finding documentation on CreatableSelect, thanks react
+    //    normally, the options are stored in propertyTemplate.options
+    //    this is constant but there is a mutator for it, so trying to use the mutator for it
+    //    not sure if I can avoid generating options
+
+    const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
     const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
         // not sure if these are correct, but should be something sorta close
-        return {
+        const option: IPropertyOption = {
             id: card.id,
             value: card.title,
             color: '255, 255, 255'
-        }
+        };
+
+        mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
+            mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+        })
     }) : []
+
+    propertyTemplate.options.map((v) => {})
 
     const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
         const option: IPropertyOption = {
@@ -49,8 +59,6 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
             mutator.changePropertyValue(board.id, card, propertyTemplate.id, currentValues.map((v: IPropertyOption) => v.id))
         })
     }, [board, board.id, card, propertyTemplate])
-
-    const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
@@ -94,7 +102,7 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         <ValueSelector
             isMulti={true}
             emptyValue={emptyDisplayValue}
-            options={options}
+            options={propertyTemplate.options}
             value={values}
             onChange={onChange}
             onChangeColor={onChangeColor} // do no allow changing color
