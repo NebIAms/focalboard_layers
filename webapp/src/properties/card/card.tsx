@@ -32,7 +32,7 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
 
     const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
-    const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
+    Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
         // not sure if these are correct, but should be something sorta close
         const option: IPropertyOption = {
@@ -40,12 +40,11 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
             value: card.title,
             color: '255, 255, 255'
         };
-
-        mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
+        // only add if not found
+        propertyTemplate.options.find((o) => o.id === card.id)===undefined ? mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
         })
 
-        return option
     }) : []
 
     const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
