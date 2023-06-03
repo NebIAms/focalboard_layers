@@ -44,9 +44,9 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
         })
-    }) : []
 
-    propertyTemplate.options.map((v) => {})
+        return option
+    }) : []
 
     const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
         const option: IPropertyOption = {
