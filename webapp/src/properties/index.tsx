@@ -18,7 +18,7 @@ import PersonProperty from './person/property'
 import MultiPersonProperty from './multiperson/property'
 import CheckboxProperty from './checkbox/property'
 import UnknownProperty from './unknown/property'
-import CardProperty from './card/property'
+import CardPropertyType from './card/property'
 
 import {PropertyType} from './types'
 
@@ -62,6 +62,6 @@ registry.register(new CreatedTimeProperty())
 registry.register(new CreatedByProperty())
 registry.register(new UpdatedTimeProperty())
 registry.register(new UpdatedByProperty())
-registry.register(new CardProperty())
+registry.register(new CardPropertyType())
 
 export default registry

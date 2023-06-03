@@ -5,6 +5,7 @@ import React, {useState, useCallback} from 'react'
 import {useIntl} from 'react-intl'
 
 import mutator from '../../mutator'
+import {Utils, IDType} from '../../utils'
 import {PropertyProps} from '../types'
 import {useAppSelector} from '../../store/hooks'
 import {getCurrentViewCardsSortedFilteredAndGrouped} from '../../store/cards'
@@ -13,7 +14,7 @@ import {IPropertyOption} from '../../blocks/board'
 import {Card} from '../../blocks/card'
 import Label from '../../widgets/label'
 
-const Card = (props: PropertyProps): JSX.Element => {
+const CardProperty = (props: PropertyProps): JSX.Element => {
     const {propertyTemplate, propertyValue, board, card} = props
     const [open, setOpen] = useState(false)
     const isEditable = !props.readOnly && Boolean(board)
@@ -24,7 +25,7 @@ const Card = (props: PropertyProps): JSX.Element => {
 
     // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
 
-    // TODO: clicking off needs to close the options, not sure what does that
+    // TODO: cannot add items, no idea how. Maybe it's one of the other callbacks?
 
     const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
@@ -35,6 +36,18 @@ const Card = (props: PropertyProps): JSX.Element => {
             color: '255, 255, 255'
         }
     }) : []
+
+    const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
+        const option: IPropertyOption = {
+            id: Utils.createGuid(IDType.BlockID),
+            value: newValue,
+            color: 'propColorDefault',
+        }
+        currentValues.push(option)
+        mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
+            mutator.changePropertyValue(board.id, card, propertyTemplate.id, currentValues.map((v: IPropertyOption) => v.id))
+        })
+    }, [board, board.id, card, propertyTemplate])
 
     const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
@@ -82,12 +95,12 @@ const Card = (props: PropertyProps): JSX.Element => {
             onChangeColor={() => {}} // do no allow changing color
             onDeleteOption={() => {}} // do no allow deletion
             onDeleteValue={(valueToRemove) => onDeleteValue(valueToRemove, values)}
-            onCreate={() => {}} // do not allow creation
+            onCreate={(newValue) => onCreateValue(newValue, values)} // do not allow creation
             onBlur={() => setOpen(false)}
         />
     )
 }
-export default Card
+export default CardProperty
 
 
 

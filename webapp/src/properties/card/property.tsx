@@ -4,10 +4,10 @@ import {IntlShape} from 'react-intl'
 
 import {PropertyType, PropertyTypeEnum, FilterValueType} from '../types'
 
-import Card from './card'
+import CardProperty from './card'
 
-export default class CardProperty extends PropertyType {
-    Editor = Card
+export default class CardPropertyType extends PropertyType {
+    Editor = CardProperty
     name = 'Card'
     type = 'card' as PropertyTypeEnum
     displayName = (intl: IntlShape) => intl.formatMessage({id: 'PropertyType.Card', defaultMessage: 'Card'})
