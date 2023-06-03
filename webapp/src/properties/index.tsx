@@ -18,6 +18,7 @@ import PersonProperty from './person/property'
 import MultiPersonProperty from './multiperson/property'
 import CheckboxProperty from './checkbox/property'
 import UnknownProperty from './unknown/property'
+import CardProperty from './card/property'
 
 import {PropertyType} from './types'
 
@@ -50,7 +51,7 @@ registry.register(new TextProperty())
 registry.register(new NumberProperty())
 registry.register(new EmailProperty())
 registry.register(new PhoneProperty())
-//registry.register(new UrlProperty())
+registry.register(new UrlProperty())
 registry.register(new SelectProperty())
 registry.register(new MultiSelectProperty())
 registry.register(new DateProperty())
@@ -61,5 +62,6 @@ registry.register(new CreatedTimeProperty())
 registry.register(new CreatedByProperty())
 registry.register(new UpdatedTimeProperty())
 registry.register(new UpdatedByProperty())
+registry.register(new CardProperty())
 
 export default registry
