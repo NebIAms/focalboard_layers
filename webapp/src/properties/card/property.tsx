@@ -10,7 +10,7 @@ export default class CardProperty extends PropertyType {
     Editor = Card
     name = 'Card'
     type = 'card' as PropertyTypeEnum
-    displayName = (intl: IntlShape) => intl.formatMessage({id: 'PropertyType.Text', defaultMessage: 'Card'})
+    displayName = (intl: IntlShape) => intl.formatMessage({id: 'PropertyType.Card', defaultMessage: 'Card'})
     canFilter = true
     filterValueType = 'card' as FilterValueType
 }
