@@ -25,7 +25,8 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
 
     // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
 
-    // TODO: cannot add items, no idea how. Maybe it's one of the other callbacks?
+    // TODO: cannot add items, no idea how. Maybe it's one of the other callbacks? Maybe it's the CreatableSelect?
+    //    having a hard time finding documentation on CreatableSelect, thanks react
 
     const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
@@ -52,6 +53,10 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
     const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
+
+    const onChangeColor = useCallback((option: IPropertyOption, colorId: string) => mutator.changePropertyOptionColor(board.id, board.cardProperties, propertyTemplate, option, colorId), [board, propertyTemplate])
+    
+    const onDeleteOption = useCallback((option: IPropertyOption) => mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, option), [board, propertyTemplate])
 
     const onDeleteValue = useCallback((valueToDelete: IPropertyOption, currentValues: IPropertyOption[]) => {
         const newValues = currentValues.
@@ -92,8 +97,8 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
             options={options}
             value={values}
             onChange={onChange}
-            onChangeColor={() => {}} // do no allow changing color
-            onDeleteOption={() => {}} // do no allow deletion
+            onChangeColor={onChangeColor} // do no allow changing color
+            onDeleteOption={onDeleteOption} // do no allow deletion
             onDeleteValue={(valueToRemove) => onDeleteValue(valueToRemove, values)}
             onCreate={(newValue) => onCreateValue(newValue, values)} // do not allow creation
             onBlur={() => setOpen(false)}
