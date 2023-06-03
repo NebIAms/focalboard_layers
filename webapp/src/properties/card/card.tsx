@@ -11,17 +11,20 @@ import {getCurrentViewCardsSortedFilteredAndGrouped} from '../../store/cards'
 import ValueSelector from '../../widgets/valueSelector'
 import {IPropertyOption} from '../../blocks/board'
 import {Card} from '../../blocks/card'
+import Label from '../../widgets/label'
 
 const Card = (props: PropertyProps): JSX.Element => {
     const {propertyTemplate, propertyValue, board, card} = props
     const [open, setOpen] = useState(false)
-
+    const isEditable = !props.readOnly && Boolean(board)
     const intl = useIntl()
     const emptyDisplayValue = props.showEmptyPlaceholder ? intl.formatMessage({id: 'PropertyValueElement.empty', defaultMessage: 'Empty'}) : ''
 
     const cards: Card[] = useAppSelector(getCurrentViewCardsSortedFilteredAndGrouped)
 
     // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
+
+    // TODO: clicking off needs to close the options, not sure what does that
 
     const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
@@ -43,6 +46,31 @@ const Card = (props: PropertyProps): JSX.Element => {
             map((currentValue) => currentValue.id)
         mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValues)
     }, [board.id, card, propertyTemplate.id])
+
+    if (!isEditable || !open) {
+        return (
+            <div
+                className={props.property.valueClassName(!isEditable)}
+                tabIndex={0}
+                data-testid='multiselect-non-editable'
+                onClick={() => setOpen(true)}
+            >
+                {values.map((v) => (
+                    <Label
+                        key={v.id}
+                        color={v.color}
+                    >
+                        {v.value}
+                    </Label>
+                ))}
+                {values.length === 0 && (
+                    <Label
+                        color='empty'
+                    >{emptyDisplayValue}</Label>
+                )}
+            </div>
+        )
+    }
 
     return (
         <ValueSelector
