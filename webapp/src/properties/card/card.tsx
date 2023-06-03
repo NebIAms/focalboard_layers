@@ -43,9 +43,9 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         // only add if not found
         propertyTemplate.options.find((o) => o.id === card.id)===undefined ? mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-        })
+        }) : null
 
-    }) : []
+    }): []
 
     const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
         const option: IPropertyOption = {
