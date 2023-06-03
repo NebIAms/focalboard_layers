@@ -23,16 +23,18 @@ const Card = (props: PropertyProps): JSX.Element => {
 
     // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
 
-    const values: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
+    const options: IPropertyOption[] = Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
     {
         // not sure if these are correct, but should be something sorta close
         return {
             id: card.id,
-            value: card.id,
+            value: card.title,
             color: '255, 255, 255'
         }
     }) : []
-    
+
+    const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
+
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
     const onDeleteValue = useCallback((valueToDelete: IPropertyOption, currentValues: IPropertyOption[]) => {
@@ -46,7 +48,7 @@ const Card = (props: PropertyProps): JSX.Element => {
         <ValueSelector
             isMulti={true}
             emptyValue={emptyDisplayValue}
-            options={propertyTemplate.options}
+            options={options}
             value={values}
             onChange={onChange}
             onChangeColor={() => {}} // do no allow changing color
