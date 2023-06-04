@@ -39,42 +39,26 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
             color: '255, 255, 255'
         };
 
-        // Add if not found
-        // Don't add own card
-        if ((propertyTemplate.options.find((o) => o.id === currentCard.id) === undefined) && (currentCard.id !== card.id)) {
+        // Add if not found, self and other options are filtered out later
+        if (propertyTemplate.options.find((o) => o.id === currentCard.id) === undefined) {
             mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
                 mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
             })
         }
     }) : [];
-    
-    // TODO: this deletes the value from other cards too
-    //       this other property deletion does not do any searching, only for the current card
-    //       it actually updates the whole board
-    // delete self card from options
-    // var selfOption = propertyTemplate.options.find((o) => o.id === card.id)
-    // if (selfOption !== undefined) {
-    //     mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, selfOption)
-    //     .then(() => {
-    //        mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-    //     })
-    // }
 
-    // delete self, but only in values, NOT the option
-    // this filters for everything except self
-    mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.filter(((v): v is IPropertyOption => Boolean(v.id !== card.id))).map((v: IPropertyOption) => v.id))
+    // TODO: you dummy, just remove them from propertyTemplate.options and make a temp options list
+    // remove self from options
+    const options : IPropertyOption[] = propertyTemplate.options.filter((o): o is IPropertyOption => Boolean(o.id !== card.id))
 
-    //mutator.insertPropertyTemplate
-
-
-    // // delete cards that do not exist in the board
-    // propertyTemplate.options.map((o) => {
-    //     if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
-    //         mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
-    //             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-    //         })
-    //     }
-    // })
+    // delete cards that do not exist in the board
+    propertyTemplate.options.map((o) => {
+        if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
+            mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
+                mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+            })
+        }
+    })
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
@@ -117,7 +101,7 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         <ValueSelector
             isMulti={true}
             emptyValue={emptyDisplayValue}
-            options={propertyTemplate.options}
+            options={options}
             value={values}
             onChange={onChange}
             onChangeColor={onChangeColor}
