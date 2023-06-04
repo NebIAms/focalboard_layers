@@ -647,6 +647,18 @@ class Mutator {
         TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.EditCardProperty, {board: card.boardId, card: card.id})
     }
 
+    // async changePropertyOption(boardId: string, oldCardProperties: IPropertyTemplate[], template: IPropertyTemplate, option: IPropertyOption) {
+    //     const newCardProperties: IPropertyTemplate[] = cloneDeep(oldCardProperties)
+    //     const newTemplate = newCardProperties.find((o: IPropertyTemplate) => o.id === template.id)!
+    //     newTemplate.options = newTemplate.options.filter((o) => o.id !== option.id)
+
+    //     await this.updateBlock(boardId, newCard, card, description)
+    //     TelemetryClient.trackEvent(TelemetryCategory, TelemetryActions.EditCardProperty, {board: card.boardId, card: card.id})
+    //     await this.updateBoardCardProperties(boardId, oldCardProperties, newCardProperties, 'delete option')
+    // }
+
+
+
     async changePropertyTypeAndName(board: Board, cards: Card[], propertyTemplate: IPropertyTemplate, newType: PropertyTypeEnum, newName: string) {
         if (propertyTemplate.type === newType && propertyTemplate.name === newName) {
             return

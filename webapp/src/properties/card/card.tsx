@@ -48,15 +48,24 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         }
     }) : [];
     
-    // TODO: somehow this deletes the value from other cards too
+    // TODO: this deletes the value from other cards too
+    //       this other property deletion does not do any searching, only for the current card
+    //       it actually updates the whole board
     // delete self card from options
-    var selfOption = propertyTemplate.options.find((o) => o.id === card.id)
-    if (selfOption !== undefined) {
-        mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, selfOption)
-        //.then(() => {
-        //    mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-        //})
-    }
+    // var selfOption = propertyTemplate.options.find((o) => o.id === card.id)
+    // if (selfOption !== undefined) {
+    //     mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, selfOption)
+    //     .then(() => {
+    //        mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+    //     })
+    // }
+
+    // delete self, but only in values, NOT the option
+    // this filters for everything except self
+    mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.filter(((v): v is IPropertyOption => Boolean(v.id !== card.id))).map((v: IPropertyOption) => v.id))
+
+    //mutator.insertPropertyTemplate
+
 
     // // delete cards that do not exist in the board
     // propertyTemplate.options.map((o) => {
