@@ -48,23 +48,24 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         }
     }) : [];
     
+    // TODO: somehow this deletes the value from other cards too
     // delete self card from options
     var selfOption = propertyTemplate.options.find((o) => o.id === card.id)
     if (selfOption !== undefined) {
-        mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, selfOption).then(() => {
-            mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-        })
+        mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, selfOption)
+        //.then(() => {
+        //    mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+        //})
     }
 
-    // TODO: maybe this causes problem 1?
-    // // delete cards that do not exist in the board
-    // propertyTemplate.options.map((o) => {
-    //     if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
-    //         mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
-    //             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-    //         })
-    //     }
-    // })
+    // delete cards that do not exist in the board
+    propertyTemplate.options.map((o) => {
+        if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
+            mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
+                mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+            })
+        }
+    })
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
