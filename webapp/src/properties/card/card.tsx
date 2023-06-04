@@ -41,7 +41,7 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
 
         // Add if not found
         // Don't add own card
-        if ((propertyTemplate.options.find((o) => o.id === currentCard.id)===undefined) && (currentCard.id !== card.id)) {
+        if ((propertyTemplate.options.find((o) => o.id === currentCard.id) === undefined) && (currentCard.id !== card.id)) {
             mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
                 mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
             })
@@ -49,21 +49,21 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
 
         // delete own card
         // TODO: Should this be card or currentCard
-        if (propertyTemplate.options.find((o) => o.id === currentCard.id)!==undefined) {
+        if (propertyTemplate.options.find((o) => o.id === currentCard.id) !== undefined) {
             mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, option).then(() => {
                 mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
             })
         }
     }) : [];
 
-    // delete cards that do not exist in the board
-    propertyTemplate.options.map((o) => {
-        if (cards.find((currentCard) => (currentCard.id===o.id))===undefined) {
-            mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
-                mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-            })
-        }
-    })
+    // // delete cards that do not exist in the board
+    // propertyTemplate.options.map((o) => {
+    //     if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
+    //         mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
+    //             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+    //         })
+    //     }
+    // })
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
