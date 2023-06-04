@@ -23,48 +23,31 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
 
     const cards: Card[] = useAppSelector(getCurrentViewCardsSortedFilteredAndGrouped)
 
-    // TODO: elimate cards already selected, this card, and maybe cards that selected this card (to prevent loops)
-
-    // TODO: cannot add items, no idea how. Maybe it's one of the other callbacks? Maybe it's the CreatableSelect?
-    //    normally, the options are stored in propertyTemplate.options
-    //    this is constant but there is a mutator for it, so trying to use the mutator for it
-    //    not sure if I can avoid generating options
+    // TODO: this card, and maybe cards that selected this card (to prevent loops)
 
     const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
-    Array.isArray(cards) && cards.length > 0 ? cards.map((card) => 
+    Array.isArray(cards) && cards.length > 0 ? cards.map((currentCard) => 
     {
         // not sure if these are correct, but should be something sorta close
         const option: IPropertyOption = {
-            id: card.id,
-            value: card.title,
+            id: currentCard.id,
+            value: currentCard.title,
             color: '255, 255, 255'
         };
-        // only add if not found
-        propertyTemplate.options.find((o) => o.id === card.id)===undefined ? mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
+
+        // Only add if not found
+        // don't add own card
+        (propertyTemplate.options.find((o) => o.id === currentCard.id)===undefined) && (currentCard.id !== card.id) ? mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
         }) : null
-
     }): []
-
-    const onCreateValue = useCallback((newValue: string, currentValues: IPropertyOption[]) => {
-        const option: IPropertyOption = {
-            id: Utils.createGuid(IDType.BlockID),
-            value: newValue,
-            color: 'propColorDefault',
-        }
-        currentValues.push(option)
-        mutator.insertPropertyOption(board.id, board.cardProperties, propertyTemplate, option, 'add property option').then(() => {
-            mutator.changePropertyValue(board.id, card, propertyTemplate.id, currentValues.map((v: IPropertyOption) => v.id))
-        })
-    }, [board, board.id, card, propertyTemplate])
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
+    // this actually works, so keep it
     const onChangeColor = useCallback((option: IPropertyOption, colorId: string) => mutator.changePropertyOptionColor(board.id, board.cardProperties, propertyTemplate, option, colorId), [board, propertyTemplate])
     
-    const onDeleteOption = useCallback((option: IPropertyOption) => mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, option), [board, propertyTemplate])
-
     const onDeleteValue = useCallback((valueToDelete: IPropertyOption, currentValues: IPropertyOption[]) => {
         const newValues = currentValues.
             filter((currentValue) => currentValue.id !== valueToDelete.id).
@@ -104,10 +87,10 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
             options={propertyTemplate.options}
             value={values}
             onChange={onChange}
-            onChangeColor={onChangeColor} // do no allow changing color
-            onDeleteOption={onDeleteOption} // do no allow deletion
+            onChangeColor={onChangeColor}
+            onDeleteOption={() => {}} // do no allow deletion
             onDeleteValue={(valueToRemove) => onDeleteValue(valueToRemove, values)}
-            onCreate={(newValue) => onCreateValue(newValue, values)} // do not allow creation
+            onCreate={() => {}} // do not allow creation
             onBlur={() => setOpen(false)}
         />
     )
