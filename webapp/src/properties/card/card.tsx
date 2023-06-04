@@ -24,9 +24,9 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
     const cards: Card[] = useAppSelector(getCurrentViewCardsSortedFilteredAndGrouped)
 
     // TODO: 
-    // 1. remove this card
-    // 2. remove deled cards
-    // 3. group cards, prevent adding from groups
+    // 1. If you go into a card, add another card, then exit, and go into another card, then back to the other card, the card will be gone
+    //    The values is somehow being deleted from other cards, even though the values are NOT shared
+    // 2. group cards, prevent adding from groups
 
     const values = Array.isArray(propertyValue) && propertyValue.length > 0 ? propertyValue.map((v) => propertyTemplate.options.find((o) => o!.id === v)).filter((v): v is IPropertyOption => Boolean(v)) : []
 
@@ -56,14 +56,15 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         })
     }
 
-    // delete cards that do not exist in the board
-    propertyTemplate.options.map((o) => {
-        if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
-            mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
-                mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-            })
-        }
-    })
+    // TODO: maybe this causes problem 1?
+    // // delete cards that do not exist in the board
+    // propertyTemplate.options.map((o) => {
+    //     if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
+    //         mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
+    //             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+    //         })
+    //     }
+    // })
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
