@@ -58,14 +58,14 @@ const CardProperty = (props: PropertyProps): JSX.Element => {
         //})
     }
 
-    // delete cards that do not exist in the board
-    propertyTemplate.options.map((o) => {
-        if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
-            mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
-                mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
-            })
-        }
-    })
+    // // delete cards that do not exist in the board
+    // propertyTemplate.options.map((o) => {
+    //     if (cards.find((currentCard) => (currentCard.id === o.id)) === undefined) {
+    //         mutator.deletePropertyOption(board.id, board.cardProperties, propertyTemplate, o).then(() => {
+    //             mutator.changePropertyValue(board.id, card, propertyTemplate.id, values.map((v: IPropertyOption) => v.id))
+    //         })
+    //     }
+    // })
 
     const onChange = useCallback((newValue) => mutator.changePropertyValue(board.id, card, propertyTemplate.id, newValue), [board.id, card, propertyTemplate])
 
